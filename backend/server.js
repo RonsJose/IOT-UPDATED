@@ -3,12 +3,17 @@ const express = require('express');
 const mqtt = require('mqtt');
 const axios = require('axios');
 const cors = require('cors');
+const http = require('http');
 const WebSocket = require('ws');
 
-const wss = new WebSocket.Server({ server });
 
 const app = express();
+
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
 app.use(cors());
+
 const PORT = process.env.PORT || 3000;
 
 const key = process.env.GOOGLEMAPS_API;
