@@ -9,6 +9,7 @@ const app = express();
 app.use(cors());
 
 const key = process.env.GOOGLEMAPS_API;
+const wss = new WebSocket.Server({ server });
 
 app.get('/maps-api-url', (req, res) => {
     const url = `https://maps.googleapis.com/maps/api/js?key=${key}&v=weekly`;
@@ -43,7 +44,6 @@ app.get('/values', (req, res) => {
 
 app.listen(3000, () => console.log('Backend running on port 3000'));
 
-const wss = new WebSocket.Server({ server });
 wss.on('connection', ws => {
   console.log('WebSocket client connected');
 
