@@ -51,9 +51,9 @@
 
                 <div id="map" class="item item-6"></div>
 
-                <div class="item item-7">
+                <!-- <div class="item item-7">
                     <img src="http://10.249.207.1:81/stream" alt="Camera feed" width="300">
-                </div>                
+                </div>                 -->
 
             </div>
         </div>
@@ -62,18 +62,22 @@
 </body>
 
 <script>
-    const ws = new WebSocket("wss://iotapp-rxgzo.ondigitalocean.app/ws/");
+    const ws = new WebSocket("wss://iotapp-rxgzo-backend.ondigitalocean.app/ws/"); 
+
     ws.onopen = () => console.log('Connected to backend via WebSocket');
+
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
+       
         if (data.topic && data.value) {
             if (data.topic === 'sensor/temperature') document.getElementById('temperature').innerText = data.value;
             if (data.topic === 'sensor/humidity') document.getElementById('humidity').innerText = data.value;
             if (data.topic === 'sensor/distance') document.getElementById('distance').innerText = data.value;
-            if (data.topic === 'sensor/pressure') document.getElementById('heartRate').innerText = data.value;
-            if (data.topic === 'sensor/pressure') document.getElementById('blood').innerText = data.value;
+            if (data.topic === 'sensor/heartRate') document.getElementById('heartRate').innerText = data.value;
+            if (data.topic === 'sensor/blood') document.getElementById('blood').innerText = data.value;
         } else {
+    
             if (data['sensor/temperature']) document.getElementById('temperature').innerText = data['sensor/temperature'];
             if (data['sensor/humidity']) document.getElementById('humidity').innerText = data['sensor/humidity'];
             if (data['sensor/distance']) document.getElementById('distance').innerText = data['sensor/distance'];
@@ -85,6 +89,7 @@
     ws.onclose = () => console.log('WebSocket connection closed');
     ws.onerror = (err) => console.error('WebSocket error:', err);
 
+ 
     let map;
     async function initMap() {
         const { Map } = await google.maps.importLibrary("maps");
@@ -101,13 +106,14 @@
     }
 
     async function loadGoogleMaps() {
-        const res = await fetch('http:/138.68.150.131:3000/maps-api-url');
+     
+        const res = await fetch('https://iotapp-rxgzo-backend.ondigitalocean.app/maps-api-url'); 
         const data = await res.json();
 
         const script = document.createElement('script');
         script.src = data.url;
         script.async = true;
-        script.onload = initMap; 
+        script.onload = initMap;
 
         document.head.appendChild(script);
     }
