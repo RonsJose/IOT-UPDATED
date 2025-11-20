@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/10355/10355707.png">
+    <link rel="stylesheet" href="style.css">
+
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="Nav" class="clearfix">
+            <nav>
+                <div id="SSIA">Smart System Integration for Automobiles</div>
+            </nav>
+        </div>
+
+        <div id="container">
+            <div class="item item-1">
+                <img src="https://uxwing.com/wp-content/themes/uxwing/download/medical-science-lab/high-temperature-icon.png"
+                    alt="temperature-icon" width="100">
+                <h2>Temperature</h2>
+                <p><span id="temperature">--</span></p>
+            </div>
+            <div class="item item-2">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/024/984/141/small_2x/3d-weather-forecast-icon-raindrops-air-humidity-percentage-3d-illustration-png.png"
+                    alt="humidity-icon" width="100">
+                <h2>Humidity</h2>
+                <p><span id="humidity">--</span></p>
+            </div>
+            <div class="item item-3">
+                <img src="https://cdn-icons-png.flaticon.com/512/335/335648.png" alt="Distance Img" width="100">
+                <h2>Distance</h2>
+                <p><span id="distance">--</span></p>
+            </div>
+            <div class="item item-4">
+                <img src="https://cdn.freebiesupply.com/logos/large/2x/heart-logo-png-transparent.png" alt="Heart IMG"
+                    width="100">
+                <h2>Heart Rate</h2>
+                <p><span id="heartRate">--</span></p>
+            </div>
+            <div class="item item-5">
+                <img src="https://m.media-amazon.com/images/S/abs-image-upload-na/0/AmazonStores/A21TJRUUN4KGV/bba883408bb96efa3e99895f04d52fac.w300.h300.png"
+                    alt="Blood Oxygen IMG" width="100">
+                <h2>SpO2</h2>
+                <p><span id="blood">--</span></p>
+
+                <div id="map" class="item item-6"></div>
+
+                <div class="item item-7">
+                    <img src="http://10.249.207.1:81/stream" alt="Camera feed" width="300">
+                </div>                
+
+            </div>
+        </div>
+
+    </div>
+</body>
+
+<script>
+    const ws = new WebSocket('ws://138.68.150.131:3000');
+    ws.onopen = () => console.log('Connected to backend via WebSocket');
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.topic && data.value) {
+            if (data.topic === 'sensor/temperature') document.getElementById('temperature').innerText = data.value;
+            if (data.topic === 'sensor/humidity') document.getElementById('humidity').innerText = data.value;
+            if (data.topic === 'sensor/distance') document.getElementById('distance').innerText = data.value;
+            if (data.topic === 'sensor/pressure') document.getElementById('heartRate').innerText = data.value;
+            if (data.topic === 'sensor/pressure') document.getElementById('blood').innerText = data.value;
+        } else {
+            if (data['sensor/temperature']) document.getElementById('temperature').innerText = data['sensor/temperature'];
+            if (data['sensor/humidity']) document.getElementById('humidity').innerText = data['sensor/humidity'];
+            if (data['sensor/distance']) document.getElementById('distance').innerText = data['sensor/distance'];
+            if (data['sensor/heartRate']) document.getElementById('heartRate').innerText = data['sensor/heartRate'];
+            if (data['sensor/blood']) document.getElementById('blood').innerText = data['sensor/blood'];
+        }
+    };
+
+    ws.onclose = () => console.log('WebSocket connection closed');
+    ws.onerror = (err) => console.error('WebSocket error:', err);
+
+    let map;
+    async function initMap() {
+        const { Map } = await google.maps.importLibrary("maps");
+        map = new Map(document.getElementById("map"), {
+            center: { lat: 53.277556, lng: 9.009750 },
+            zoom: 10,
+        });
+
+        new google.maps.Marker({
+            position: { lat: 53.277556, lng: 9.009750 },
+            map: map,
+            title: "Current",
+        });
+    }
+
+    async function loadGoogleMaps() {
+        const res = await fetch('http:/138.68.150.131:3000/maps-api-url');
+        const data = await res.json();
+
+        const script = document.createElement('script');
+        script.src = data.url;
+        script.async = true;
+        script.onload = initMap; 
+
+        document.head.appendChild(script);
+    }
+
+    loadGoogleMaps();
+</script>
+
+</html>
