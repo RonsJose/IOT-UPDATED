@@ -62,7 +62,7 @@
 </body>
 
 <script>
-    const ws = new WebSocket('ws://138.68.150.131:3000');
+    const ws = new WebSocket("wss://iotapp-rxgzo.ondigitalocean.app/ws/");
     ws.onopen = () => console.log('Connected to backend via WebSocket');
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);

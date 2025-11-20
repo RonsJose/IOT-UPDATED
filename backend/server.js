@@ -5,11 +5,13 @@ const axios = require('axios');
 const cors = require('cors');
 const WebSocket = require('ws');
 
+const wss = new WebSocket.Server({ server });
+
 const app = express();
 app.use(cors());
+const PORT = process.env.PORT || 3000;
 
 const key = process.env.GOOGLEMAPS_API;
-const wss = new WebSocket.Server({ server });
 
 app.get('/maps-api-url', (req, res) => {
     const url = `https://maps.googleapis.com/maps/api/js?key=${key}&v=weekly`;
@@ -42,7 +44,7 @@ app.get('/values', (req, res) => {
     res.json(latestValues);
 });
 
-app.listen(3000, () => console.log('Backend running on port 3000'));
+app.listen(PORT, () => console.log('Backend running on port ${PORT}'));
 
 wss.on('connection', ws => {
   console.log('WebSocket client connected');
